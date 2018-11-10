@@ -48,6 +48,10 @@ body {
   margin: 10px 30px;
   cursor: pointer;
   text-transform: uppercase;
+
+  &.active{
+    text-decoration: underline;
+  }
 }
 
 .cards {
