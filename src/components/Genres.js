@@ -1,46 +1,28 @@
 import React from 'react';
-import axios from 'axios';
-import { endpoints } from '../../config';
+import { connect } from 'react-redux';
+import { requestGenres, requestGenreMovies } from "../actions/genres-actions";
 
-export default class Genres extends React.Component {
+class Genres extends React.Component {
   constructor() {
     super();
-
-    this.state = {
-      genres: [],
-    };
-
-    this.requestGenres();
   }
 
-  requestGenres = () => {
-    axios
-      .get(endpoints.genres())
-      .then((res) => this.setGenreList(res.data.genres))
-      .catch((error) => console.log(error));
-  };
+  componentDidMount() {
+    const { onRequestGenres } = this.props;
+    onRequestGenres();
+  }
 
-  requestGenresMovies = (id) => {
-    const { onChangeList } = this.props;
-
-    axios
-      .get(endpoints.genreMovies(id))
-      .then((res) => onChangeList(res.data.results))
-      .catch((error) => console.log(error));
-  };
-
-  setGenreList = (genres) => {
-    this.setState({
-      genres,
-    })
+  requestGenresMovies = (genreId) => {
+    const { onRequestGenreMovies } = this.props;
+    onRequestGenreMovies(genreId);
   };
 
   render() {
-    const { genres } = this.state;
+    const { genres } = this.props;
 
     return (
       <div className="genres">
-        {genres.map((genre) => (
+        {genres.list.map((genre) => (
           <div key={genre.id} className="genre" onClick={() => this.requestGenresMovies(genre.id)}>
             {genre.name}
           </div>
@@ -49,3 +31,19 @@ export default class Genres extends React.Component {
     );
   }
 }
+
+export default connect(
+    //mapStateToProps
+    (state) => {
+        return {
+            genres: state.genres,
+        };
+    },
+    //mapActionsToProps
+    (dispatch) => {
+        return {
+            onRequestGenres: () => dispatch(requestGenres()),
+            onRequestGenreMovies: (genreId) => dispatch(requestGenreMovies(genreId)),
+        };
+    }
+)(Genres);

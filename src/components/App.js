@@ -2,49 +2,36 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Card from './Card';
 import Genres from './Genres';
-import { setMovieList } from '../actions';
-import { getPopularMovies } from '../thunks';
+import { setMovieList, getPopularMovies } from "../actions/movies-actions";
+import { addMovieHeart, removeMovieHeart } from "../actions/hearts-actions";
 
 class App extends React.Component {
   constructor() {
     super();
-
-    this.state = {
-      hearted: [],
-    };
   }
 
   componentDidMount() {
     const { onGetPopularMovies } = this.props;
-
     onGetPopularMovies();
   }
 
   setMovieList = (movieList) => {
-    this.setState({
-      movieList,
-    })
+    const { onSetMovieList } = this.props;
+    onSetMovieList(movieList);
   };
 
   addHeart = (id) => {
-    const { hearted } = this.state;
-
-    this.setState({
-      hearted: [ ...hearted, id ],
-    })
+    const { onAddMovieHeart } = this.props;
+    onAddMovieHeart(id);
   };
 
   removeHeart = (id) => {
-    const { hearted } = this.state;
-
-    this.setState({
-      hearted: hearted.filter((currentId) => currentId !== id),
-    })
+    const { onRemoveMovieHeart } = this.props;
+    onRemoveMovieHeart(id);
   };
 
   render() {
-    const { hearted } = this.state;
-    const { movies } = this.props;
+    const { movies, hearted } = this.props;
 
     return (
       <React.Fragment>
@@ -67,15 +54,21 @@ class App extends React.Component {
 }
 
 export default connect(
+  //mapStateToProps
   (state) => {
     return {
       movies: state.movies.list,
+      hearted: state.hearted,
     };
   },
+  //mapActionsToProps
   (dispatch) => {
     return {
       onGetPopularMovies: () => dispatch(getPopularMovies()),
       onSetMovieList: (list) => dispatch(setMovieList(list)),
+
+      onAddMovieHeart: (movieId) => dispatch(addMovieHeart(movieId)),
+      onRemoveMovieHeart: (movieId) => dispatch(removeMovieHeart(movieId)),
     };
   }
 )(App);

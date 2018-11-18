@@ -1,19 +1,11 @@
 import { combineReducers } from 'redux';
+import { moviesReducer } from "./reducers/movies-reducer";
+import { genresReducer } from "./reducers/genres-reducer";
+import { heartsReducer } from "./reducers/hearts-reducer";
 
-const initialState = {
-  list: [],
-};
-
-const moviesReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case 'SET_MOVIE_LIST':
-      return { ...state, list: action.list };
-
-    default:
-      return state;
-  }
-};
 
 export default combineReducers({
   movies: moviesReducer,
+  genres: genresReducer,
+  hearted: heartsReducer,
 });
