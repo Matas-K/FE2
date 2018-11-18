@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { requestGenres, requestGenreMovies } from "../actions/genres-actions";
+import { addLogEvent } from "../actions/logs-acions";
 
 class Genres extends React.Component {
   constructor() {
@@ -12,9 +13,10 @@ class Genres extends React.Component {
     onRequestGenres();
   }
 
-  requestGenresMovies = (genreId) => {
-    const { onRequestGenreMovies } = this.props;
-    onRequestGenreMovies(genreId);
+  requestGenresMovies = (genre) => {
+    const { onRequestGenreMovies, addLogEvent } = this.props;
+    onRequestGenreMovies(genre.id);
+    addLogEvent('Pakeistas zanras i '+genre.name);
   };
 
   render() {
@@ -23,7 +25,7 @@ class Genres extends React.Component {
     return (
       <div className="genres">
         {genres.list.map((genre) => (
-          <div key={genre.id} className="genre" onClick={() => this.requestGenresMovies(genre.id)}>
+          <div key={genre.id} className="genre" onClick={() => this.requestGenresMovies(genre)}>
             {genre.name}
           </div>
         ))}
@@ -44,6 +46,7 @@ export default connect(
         return {
             onRequestGenres: () => dispatch(requestGenres()),
             onRequestGenreMovies: (genreId) => dispatch(requestGenreMovies(genreId)),
+            addLogEvent: (message) => dispatch(addLogEvent(message)),
         };
     }
 )(Genres);

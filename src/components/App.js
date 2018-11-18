@@ -4,6 +4,7 @@ import Card from './Card';
 import Genres from './Genres';
 import { setMovieList, getPopularMovies } from "../actions/movies-actions";
 import { addMovieHeart, removeMovieHeart } from "../actions/hearts-actions";
+import { addLogEvent } from "../actions/logs-acions";
 
 class App extends React.Component {
   constructor() {
@@ -11,8 +12,9 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    const { onGetPopularMovies } = this.props;
+    const { onGetPopularMovies, addLogEvent } = this.props;
     onGetPopularMovies();
+    addLogEvent('Aplikacija uzkrauta');
   }
 
   setMovieList = (movieList) => {
@@ -20,14 +22,16 @@ class App extends React.Component {
     onSetMovieList(movieList);
   };
 
-  addHeart = (id) => {
-    const { onAddMovieHeart } = this.props;
-    onAddMovieHeart(id);
+  addHeart = (movie) => {
+    const { onAddMovieHeart, addLogEvent } = this.props;
+    onAddMovieHeart(movie.id);
+    addLogEvent('Uzdeta sirdele filmui '+movie.title);
   };
 
-  removeHeart = (id) => {
-    const { onRemoveMovieHeart } = this.props;
-    onRemoveMovieHeart(id);
+  removeHeart = (movie) => {
+    const { onRemoveMovieHeart, addLogEvent } = this.props;
+    onRemoveMovieHeart(movie.id);
+    addLogEvent('Nuimta sirdele filmui '+movie.title);
   };
 
   render() {
@@ -42,8 +46,8 @@ class App extends React.Component {
             <Card
               key={movie.id}
               isHearted={hearted.includes(movie.id)}
-              onAddHeart={() => this.addHeart(movie.id)}
-              onRemoveHeart={() => this.removeHeart(movie.id)}
+              onAddHeart={() => this.addHeart(movie)}
+              onRemoveHeart={() => this.removeHeart(movie)}
               movie={movie}
             />
           ))}
@@ -59,6 +63,7 @@ export default connect(
     return {
       movies: state.movies.list,
       hearted: state.hearted,
+      logs: state.logs,
     };
   },
   //mapActionsToProps
@@ -69,6 +74,8 @@ export default connect(
 
       onAddMovieHeart: (movieId) => dispatch(addMovieHeart(movieId)),
       onRemoveMovieHeart: (movieId) => dispatch(removeMovieHeart(movieId)),
+
+      addLogEvent: (message) => dispatch(addLogEvent(message)),
     };
   }
 )(App);
